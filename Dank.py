@@ -9,13 +9,14 @@ from nltk import tokenize as tk;
 from nltk import corpus;
 from nltk import stem;
 import pandas as panda
-import tensorflow as tf
+
 import numpy as np
 import math as math
 import json 
 from watson_developer_cloud import NaturalLanguageUnderstandingV1
 from watson_developer_cloud.natural_language_understanding_v1 \
   import Features, EntitiesOptions, KeywordsOptions
+import tensorflow as tf
 
 def stemmedPunctuationTokenized(sentence):
     s = stem.PorterStemmer()
@@ -24,28 +25,28 @@ def stemmedPunctuationTokenized(sentence):
     return " ".join(words) 
 
 urlTarget='https://en.wikipedia.org/wiki/Multivariable_calculus'
-nRelevance=10
+nRelevance=5
 compressionRate=0.70 
-nSent = 4
+nSent = 5
 sess = tf.Session()
 nl = NaturalLanguageUnderstandingV1(
-  username='API_Key',
-  password='API_pw',
-  version='2017-02-27')
+  version='2018-11-16',
+  iam_apikey='API_KEY',
+  url='URL')
 
 response = nl.analyze(
-  url=urlTarget,
+  text="Yikes",
   features=Features(
     #entities=EntitiesOptions(emotion=True,sentiment=True,limit=2),
     keywords=KeywordsOptions(limit=nRelevance+1)),
   return_analyzed_text=True)
   
-  
+print(response.result)
   
 stopword = set(corpus.stopwords.words("english"));
-article = tk.sent_tokenize(response["analyzed_text"])
+article = tk.sent_tokenize(response.result["analyzed_text"])
 
-keywords = response['keywords']
+keywords = response.result['keywords']
 print(keywords)
 sentRelevance = []
 s = stem.PorterStemmer();
